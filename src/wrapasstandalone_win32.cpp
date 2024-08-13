@@ -3,15 +3,15 @@
 #include "detail/standalone/windows/host_window.h"
 #include "detail/standalone/windows/helpers.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
   const clap_plugin_entry* entry{nullptr};
 #ifdef STATICALLY_LINKED_CLAP_ENTRY
   extern const clap_plugin_entry clap_entry;
   entry = &clap_entry;
 #else
-  auto clapName{std::string(HOSTED_CLAP_NAME)};
-  LOG << "Loading " << clapName << std::endl;
+  std::string clapName{HOSTED_CLAP_NAME};
+  freeaudio::clap_wrapper::standalone::windows::helpers::log({"Loading ", clapName});
 
   auto lib{Clap::Library()};
 
