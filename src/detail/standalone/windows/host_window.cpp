@@ -137,6 +137,8 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
     {
       case WM_DPICHANGED:
         return self->onDpiChanged(hWnd, uMsg, wParam, lParam);
+      case WM_WINDOWPOSCHANGING:
+        return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGED:
         return self->onWindowPosChanged(hWnd, uMsg, wParam, lParam);
       case WM_SYSCOMMAND:
@@ -156,6 +158,29 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
   return 0;
 }
 
+int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
+{
+  auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
+
+  if (m_pluginGui->can_resize(m_plugin))
+  {
+    auto width{static_cast<uint32_t>(windowPos->cx)};
+    auto height{static_cast<uint32_t>(windowPos->cy)};
+
+    clap_gui_resize_hints resizeHints;
+    if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
+    {
+      helpers::log("preserve_aspect_ratio: {}", resizeHints.preserve_aspect_ratio);
+      helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
+                   resizeHints.aspect_ratio_height);
+      helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
+                   resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
+    }
+  }
+
+  return 0;
+}
+
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
@@ -171,21 +196,8 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
 
   if (m_pluginGui->can_resize(m_plugin))
   {
-    ::RECT clientRect{};
-    ::GetClientRect(hWnd, &clientRect);
-
-    auto width{static_cast<uint32_t>(clientRect.right - clientRect.left)};
-    auto height{static_cast<uint32_t>(clientRect.bottom - clientRect.top)};
-
-    clap_gui_resize_hints resizeHints;
-    if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
-    {
-      helpers::log("preserve_aspect_ratio: {}", resizeHints.preserve_aspect_ratio);
-      helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
-                   resizeHints.aspect_ratio_height);
-      helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
-                   resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
-    }
+    auto width{static_cast<uint32_t>(windowPos->cx)};
+    auto height{static_cast<uint32_t>(windowPos->cy)};
 
     m_pluginGui->adjust_size(m_plugin, &width, &height);
     m_pluginGui->set_size(m_plugin, width, height);
