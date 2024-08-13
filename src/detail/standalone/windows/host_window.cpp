@@ -16,18 +16,6 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   , m_pluginGui{m_clapPlugin->_ext._gui}
   , m_pluginState{m_clapPlugin->_ext._state}
 {
-  if (!m_plugin)
-  {
-    helpers::errorBox("Plugin is null");
-    helpers::abort();
-  }
-
-  if (!m_pluginGui)
-  {
-    helpers::errorBox("Plugin GUI is null");
-    helpers::abort();
-  }
-
   freeaudio::clap_wrapper::standalone::windows::helpers::createWindow(
       helpers::toUTF16(OUTPUT_NAME).c_str(), this);
 
@@ -40,12 +28,6 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   setupMenu();
 
   setupStandaloneHost();
-
-  if (!checkApi())
-  {
-    helpers::errorBox("CLAP_WINDOW_API_WIN32 is not supported");
-    helpers::abort();
-  }
 
   setupPlugin();
 
@@ -97,11 +79,6 @@ void HostWindow::setupStandaloneHost()
 {
   freeaudio::clap_wrapper::standalone::getStandaloneHost()->onRequestResize =
       [this](uint32_t width, uint32_t height) { return setWindowSize(width, height); };
-}
-
-bool HostWindow::checkApi()
-{
-  return m_pluginGui->is_api_supported(m_plugin, CLAP_WINDOW_API_WIN32, false);
 }
 
 void HostWindow::setupPlugin()

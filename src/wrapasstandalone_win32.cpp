@@ -37,7 +37,16 @@ int main(int argc, char** argv)
       freeaudio::clap_wrapper::standalone::mainCreatePlugin(entry, PLUGIN_ID, PLUGIN_INDEX, argc, argv)};
   freeaudio::clap_wrapper::standalone::mainStartAudio();
 
-  freeaudio::clap_wrapper::standalone::windows::HostWindow hostWindow{clapPlugin};
+  if (clapPlugin->_ext._gui->is_api_supported(clapPlugin->_plugin, CLAP_WINDOW_API_WIN32, false))
+  {
+    freeaudio::clap_wrapper::standalone::windows::HostWindow hostWindow{clapPlugin};
 
-  return freeaudio::clap_wrapper::standalone::windows::helpers::messageLoop();
+    return freeaudio::clap_wrapper::standalone::windows::helpers::messageLoop();
+  }
+  else
+  {
+    freeaudio::clap_wrapper::standalone::windows::helpers::errorBox(
+        "CLAP_WINDOW_API_WIN32 is not supported");
+    freeaudio::clap_wrapper::standalone::windows::helpers::abort();
+  }
 }

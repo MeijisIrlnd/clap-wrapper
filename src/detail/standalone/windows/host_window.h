@@ -16,7 +16,6 @@ struct HostWindow
   void setupMenu();
   void setupStandaloneHost();
   void setupPlugin();
-  bool checkApi();
 
   bool setWindowSize(uint32_t width, uint32_t height);
 
