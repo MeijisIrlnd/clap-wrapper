@@ -135,8 +135,6 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
   {
     switch (uMsg)
     {
-      case WM_SHOWWINDOW:
-        return self->onShowWindow(hWnd, uMsg, wParam, lParam);
       case WM_DPICHANGED:
         return self->onDpiChanged(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGED:
@@ -151,20 +149,6 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
   return ::DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-int HostWindow::onShowWindow(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
-{
-  if (wParam)
-  {
-    m_pluginGui->show(m_plugin);
-  }
-  else
-  {
-    m_pluginGui->hide(m_plugin);
-  }
-
-  return 0;
-}
-
 int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   m_pluginGui->set_scale(m_plugin, helpers::getCurrentScale(hWnd));
@@ -174,6 +158,17 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
+  auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
+
+  if (windowPos->flags & SWP_SHOWWINDOW)
+  {
+    m_pluginGui->show(m_plugin);
+  }
+  if (windowPos->flags & SWP_HIDEWINDOW)
+  {
+    m_pluginGui->hide(m_plugin);
+  }
+
   if (m_pluginGui->can_resize(m_plugin))
   {
     ::RECT rect{};
