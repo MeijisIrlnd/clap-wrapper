@@ -102,41 +102,49 @@ int messageLoop()
   return static_cast<int>(msg.wParam);
 }
 
-std::string toUTF8(const std::wstring& wstring)
+std::wstring toUTF16(std::string_view utf8)
 {
-  if (wstring.empty()) return {};
+  std::wstring utf16;
 
-  auto safeSize{checkSafeSize<size_t, int>(wstring.length())};
+  if (utf8.length() > 0)
+  {
+    int safeSize{checkSafeSize<int>(utf8.length())};
 
-  auto length{::WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS | WC_ERR_INVALID_CHARS, wstring.data(),
-                                    safeSize, nullptr, 0, nullptr, nullptr)};
+    auto length{::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8.data(), safeSize, nullptr, 0)};
 
-  std::string utf8(length, 0);
+    utf16.resize(length);
 
-  if (::WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS | WC_ERR_INVALID_CHARS, wstring.data(),
-                            safeSize, utf8.data(), length, nullptr, nullptr) > 0)
-    return utf8;
+    if (::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8.data(), safeSize, utf16.data(),
+                              length) == 0)
+    {
+      throw std::exception("UTF8 to UTF16 conversion failed");
+    }
+  }
 
-  else
-    return {};
+  return utf16;
 }
 
-std::wstring toUTF16(const std::string& string)
+std::string toUTF8(std::wstring_view utf16)
 {
-  if (string.empty()) return {};
+  std::string utf8;
 
-  auto safeSize{checkSafeSize<size_t, int>(string.length())};
+  if (utf16.length() > 0)
+  {
+    int safeSize{checkSafeSize<int>(utf16.length())};
 
-  auto length{::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, string.data(), safeSize, nullptr, 0)};
+    auto length{::WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS | WC_ERR_INVALID_CHARS, utf16.data(),
+                                      safeSize, nullptr, 0, nullptr, nullptr)};
 
-  std::wstring utf16(length, 0);
+    utf8.resize(length);
 
-  if (::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, string.data(), safeSize, utf16.data(),
-                            length) > 0)
-    return utf16;
+    if (::WideCharToMultiByte(CP_UTF8, WC_NO_BEST_FIT_CHARS | WC_ERR_INVALID_CHARS, utf16.data(),
+                              safeSize, utf8.data(), length, nullptr, nullptr) == 0)
+    {
+      throw std::exception("UTF16 to UTF8 conversion failed");
+    }
+  }
 
-  else
-    return {};
+  return utf8;
 }
 
 void dbg(const std::string& message)

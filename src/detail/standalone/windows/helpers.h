@@ -40,8 +40,8 @@ void quit(unsigned int exitCode = EXIT_SUCCESS);
 
 int messageLoop();
 
-std::string toUTF8(const std::wstring& wstring);
-std::wstring toUTF16(const std::string& string);
+std::wstring toUTF16(std::string_view utf8);
+std::string toUTF8(std::wstring_view utf16);
 
 void log(const std::string& message);
 void log(const std::wstring& message);
@@ -123,17 +123,17 @@ T* instanceFromWndProc(HWND hWnd, UINT uMsg, LPARAM lParam)
   return self;
 }
 
-template <typename T, typename U>
-U checkSafeSize(T value)
+template <typename R, typename T>
+auto checkSafeSize(T value) -> R
 {
-  constexpr U max{std::numeric_limits<U>::max()};
+  constexpr R max{std::numeric_limits<R>::max()};
 
   if (value > static_cast<T>(max))
   {
     throw std::overflow_error("Unsafe size");
   }
 
-  return static_cast<U>(value);
+  return static_cast<R>(value);
 }
 
 template <typename... Args>
