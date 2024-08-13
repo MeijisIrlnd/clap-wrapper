@@ -262,7 +262,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
         }
         catch (const fs::filesystem_error& e)
         {
-          helpers::errorBox({"Unable to save state: ", e.what()});
+          helpers::errorBox("Unable to save state: {}", e.what());
         }
       }
 
@@ -302,7 +302,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
         }
         catch (const fs::filesystem_error& e)
         {
-          helpers::errorBox({"Unable to load state: ", e.what()});
+          helpers::errorBox("Unable to load state: {}", e.what());
         }
       }
 

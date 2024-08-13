@@ -10,6 +10,10 @@
 
 #include "detail/standalone/entry.h"
 
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+#include <fmt/xchar.h>
+
 namespace freeaudio::clap_wrapper::standalone::windows::helpers::detail
 {
 struct DefaultWindowProcedure
@@ -21,6 +25,7 @@ struct DefaultWindowProcedure
 namespace freeaudio::clap_wrapper::standalone::windows::helpers
 {
 ::HMODULE getInstance();
+
 bool activateWindow(::HWND window);
 bool showWindow(::HWND window);
 bool hideWindow(::HWND window);
@@ -32,12 +37,21 @@ double getCurrentScale(::HWND window);
 
 void abort(unsigned int exitCode = EXIT_FAILURE);
 void quit(unsigned int exitCode = EXIT_SUCCESS);
+
 int messageLoop();
-std::string toUTF8(std::wstring wstring);
-std::wstring toUTF16(std::string string);
-void log(std::initializer_list<std::string> args);
-void messageBox(std::initializer_list<std::string> args);
-void errorBox(std::initializer_list<std::string> args);
+
+std::string toUTF8(const std::wstring& wstring);
+std::wstring toUTF16(const std::string& string);
+
+void log(const std::string& message);
+void log(const std::wstring& message);
+
+void messageBox(const std::string& message);
+void messageBox(const std::wstring& message);
+
+void errorBox(const std::string& message);
+void errorBox(const std::wstring& message);
+
 ::HBRUSH loadBrushFromSystem(int name = BLACK_BRUSH);
 ::HCURSOR loadCursorFromSystem(LPSTR name = IDC_ARROW);
 ::HICON loadIconFromSystem(LPSTR name = IDI_APPLICATION);
@@ -70,7 +84,7 @@ auto registerWindowClass(const wchar_t* name, T* self = nullptr) -> const wchar_
 
     if (!atom)
     {
-      helpers::errorBox({"Window registration failed"});
+      helpers::errorBox("Window registration failed");
       helpers::abort();
     }
   }
@@ -120,5 +134,47 @@ U checkSafeSize(T value)
   }
 
   return static_cast<U>(value);
+}
+
+template <typename... Args>
+auto log(const std::format_string<Args...> fmt, Args&&... args) -> void
+{
+  ::OutputDebugStringW(toUTF16(std::vformat(fmt.get(), std::make_format_args(args...))).c_str());
+  ::OutputDebugStringW(L"\n");
+}
+
+template <typename... Args>
+auto log(const std::wformat_string<Args...> fmt, Args&&... args) -> void
+{
+  ::OutputDebugStringW(std::vformat(fmt.get(), std::make_wformat_args(args...)).c_str());
+  ::OutputDebugStringW(L"\n");
+}
+
+template <typename... Args>
+auto messageBox(const std::format_string<Args...> fmt, Args&&... args) -> void
+{
+  ::MessageBoxW(nullptr, toUTF16(std::vformat(fmt.get(), std::make_format_args(args...))).c_str(),
+                nullptr, MB_OK | MB_ICONASTERISK);
+}
+
+template <typename... Args>
+auto messageBox(const std::wformat_string<Args...> fmt, Args&&... args) -> void
+{
+  ::MessageBoxW(nullptr, std::vformat(fmt.get(), std::make_wformat_args(args...)).c_str(), nullptr,
+                MB_OK | MB_ICONASTERISK);
+}
+
+template <typename... Args>
+auto errorBox(const std::format_string<Args...> fmt, Args&&... args) -> void
+{
+  ::MessageBoxW(nullptr, toUTF16(std::vformat(fmt.get(), std::make_format_args(args...))).c_str(),
+                nullptr, MB_OK | MB_ICONHAND);
+}
+
+template <typename... Args>
+auto errorBox(const std::wformat_string<Args...> fmt, Args&&... args) -> void
+{
+  ::MessageBoxW(nullptr, std::vformat(fmt.get(), std::make_wformat_args(args...)).c_str(), nullptr,
+                MB_OK | MB_ICONHAND);
 }
 }  // namespace freeaudio::clap_wrapper::standalone::windows::helpers

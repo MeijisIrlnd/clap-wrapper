@@ -11,7 +11,7 @@ int main(int argc, char** argv)
   entry = &clap_entry;
 #else
   std::string clapName{HOSTED_CLAP_NAME};
-  freeaudio::clap_wrapper::standalone::windows::helpers::log({"Loading ", clapName});
+  freeaudio::clap_wrapper::standalone::windows::helpers::log("Loading {}", clapName);
 
   auto lib{Clap::Library()};
 

@@ -102,7 +102,7 @@ int messageLoop()
   return static_cast<int>(msg.wParam);
 }
 
-std::string toUTF8(std::wstring wstring)
+std::string toUTF8(const std::wstring& wstring)
 {
   if (wstring.empty()) return {};
 
@@ -121,7 +121,7 @@ std::string toUTF8(std::wstring wstring)
     return {};
 }
 
-std::wstring toUTF16(std::string string)
+std::wstring toUTF16(const std::string& string)
 {
   if (string.empty()) return {};
 
@@ -139,41 +139,36 @@ std::wstring toUTF16(std::string string)
     return {};
 }
 
-void log(std::initializer_list<std::string> args)
+void dbg(const std::string& message)
 {
-  std::string message;
-
-  for (const auto& arg : args)
-  {
-    message.append(arg);
-  }
-
   ::OutputDebugStringW(toUTF16(message).c_str());
   ::OutputDebugStringW(L"\n");
 }
 
-void messageBox(std::initializer_list<std::string> args)
+void dbg(const std::wstring& message)
 {
-  std::string message;
+  ::OutputDebugStringW(message.c_str());
+  ::OutputDebugStringW(L"\n");
+}
 
-  for (auto arg : args)
-  {
-    message.append(arg);
-  }
-
+void messageBox(const std::string& message)
+{
   ::MessageBoxW(nullptr, toUTF16(message).c_str(), nullptr, MB_OK | MB_ICONASTERISK);
 }
 
-void errorBox(std::initializer_list<std::string> args)
+void messageBox(const std::wstring& message)
 {
-  std::string message;
+  ::MessageBoxW(nullptr, message.c_str(), nullptr, MB_OK | MB_ICONASTERISK);
+}
 
-  for (auto arg : args)
-  {
-    message.append(arg);
-  }
-
+void errorBox(const std::string& message)
+{
   ::MessageBoxW(nullptr, toUTF16(message).c_str(), nullptr, MB_OK | MB_ICONHAND);
+}
+
+void errorBox(const std::wstring& message)
+{
+  ::MessageBoxW(nullptr, message.c_str(), nullptr, MB_OK | MB_ICONHAND);
 }
 
 ::HBRUSH loadBrushFromSystem(int name)
