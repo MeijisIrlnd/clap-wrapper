@@ -166,6 +166,8 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
   {
     auto width{static_cast<uint32_t>(windowPos->cx)};
     auto height{static_cast<uint32_t>(windowPos->cy)};
+    // windowPos->cx /= 2;
+    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", width, height);
 
     clap_gui_resize_hints resizeHints;
     if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
@@ -198,6 +200,7 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
   {
     auto width{static_cast<uint32_t>(windowPos->cx)};
     auto height{static_cast<uint32_t>(windowPos->cy)};
+    helpers::log("WM_WINDOWPOSCHANGED - width: {} height: {}", width, height);
 
     m_pluginGui->adjust_size(m_plugin, &width, &height);
     m_pluginGui->set_size(m_plugin, width, height);
