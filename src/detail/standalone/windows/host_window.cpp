@@ -251,7 +251,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
         auto saveFile{std::filesystem::path(result.get())};
 
-        helpers::log("{}", saveFile);
+        helpers::log("{}", saveFile.string());
 
         try
         {
@@ -288,7 +288,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
         auto saveFile{std::filesystem::path(result.get())};
 
-        helpers::log("{}", saveFile);
+        helpers::log("{}", saveFile.string());
 
         try
         {
