@@ -16,14 +16,7 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   , m_pluginGui{m_clapPlugin->_ext._gui}
   , m_pluginState{m_clapPlugin->_ext._state}
 {
-  freeaudio::clap_wrapper::standalone::windows::helpers::createWindow(
-      OUTPUT_NAME, this);
-
-  if (!m_hWnd)
-  {
-    helpers::errorBox("Host Window creation failed");
-    helpers::abort();
-  }
+  freeaudio::clap_wrapper::standalone::windows::helpers::createWindow(OUTPUT_NAME, this);
 
   setupMenu();
 
