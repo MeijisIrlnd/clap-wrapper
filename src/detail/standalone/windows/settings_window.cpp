@@ -14,7 +14,7 @@ namespace freeaudio::clap_wrapper::standalone::windows
 {
 SettingsWindow::SettingsWindow()
 {
-  freeaudio::clap_wrapper::standalone::windows::helpers::createWindow(L"Audio/MIDI Settings", this);
+  freeaudio::clap_wrapper::standalone::windows::helpers::createWindow("Audio/MIDI Settings", this);
 
   if (!m_hWnd)
   {

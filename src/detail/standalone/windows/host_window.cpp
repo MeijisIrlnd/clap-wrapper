@@ -17,7 +17,7 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   , m_pluginState{m_clapPlugin->_ext._state}
 {
   freeaudio::clap_wrapper::standalone::windows::helpers::createWindow(
-      helpers::toUTF16(OUTPUT_NAME).c_str(), this);
+      OUTPUT_NAME, this);
 
   if (!m_hWnd)
   {

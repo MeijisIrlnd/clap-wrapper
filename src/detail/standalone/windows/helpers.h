@@ -14,14 +14,6 @@
 #include <fmt/format.h>
 #include <fmt/xchar.h>
 
-namespace freeaudio::clap_wrapper::standalone::windows::helpers::detail
-{
-struct DefaultWindowProcedure
-{
-  static auto CALLBACK wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam) -> ::LRESULT;
-};
-}  // namespace freeaudio::clap_wrapper::standalone::windows::helpers::detail
-
 namespace freeaudio::clap_wrapper::standalone::windows::helpers
 {
 ::HMODULE getInstance();
@@ -57,49 +49,34 @@ void errorBox(const std::wstring& message);
 ::HICON loadIconFromSystem(LPSTR name = IDI_APPLICATION);
 ::HICON loadIconFromResource();
 
-template <typename T = detail::DefaultWindowProcedure>
-auto registerWindowClass(const wchar_t* name, T* self = nullptr) -> const wchar_t*
+template <typename T>
+auto createWindow(std::string_view name, T* self) -> ::HWND
 {
-  ::WNDCLASSEXW windowClass{sizeof(::WNDCLASSEXW)};
-
+  auto className{toUTF16(name)};
   auto hInstance{getInstance()};
+  auto iconFromResource{loadIconFromResource()};
 
-  if (!::GetClassInfoExW(hInstance, name, &windowClass))
+  ::WNDCLASSEXW windowClass{.cbSize{sizeof(::WNDCLASSEXW)},
+                            .style{0},
+                            .lpfnWndProc{self->wndProc},
+                            .cbClsExtra{0},
+                            .cbWndExtra{sizeof(intptr_t)},
+                            .hInstance{hInstance},
+                            .hIcon{iconFromResource ? iconFromResource : loadIconFromSystem()},
+                            .hCursor{loadCursorFromSystem()},
+                            .hbrBackground{loadBrushFromSystem()},
+                            .lpszMenuName{nullptr},
+                            .lpszClassName{className.c_str()},
+                            .hIconSm{iconFromResource ? iconFromResource : loadIconFromSystem()}};
+
+  if (::GetClassInfoExW(hInstance, className.c_str(), &windowClass) == 0)
   {
-    auto iconFromResource{loadIconFromResource()};
-
-    windowClass.lpszClassName = name;
-    windowClass.lpszMenuName = nullptr;
-    windowClass.lpfnWndProc = self ? self->wndProc : ::DefWindowProcA;
-    windowClass.style = 0;
-    windowClass.cbClsExtra = 0;
-    windowClass.cbWndExtra = sizeof(intptr_t);
-    windowClass.hInstance = hInstance;
-    windowClass.hbrBackground = loadBrushFromSystem();
-    windowClass.hCursor = loadCursorFromSystem();
-    windowClass.hIcon = iconFromResource ? iconFromResource : loadIconFromSystem();
-    windowClass.hIconSm = iconFromResource ? iconFromResource : loadIconFromSystem();
-
-    auto atom{::RegisterClassExW(&windowClass)};
-
-    if (!atom)
-    {
-      helpers::errorBox("Window registration failed");
-      helpers::abort();
-    }
+    ::RegisterClassExW(&windowClass);
   }
 
-  return name;
-}
-
-template <typename T = detail::DefaultWindowProcedure>
-auto createWindow(const wchar_t* name = L"Window", T* self = nullptr) -> ::HWND
-{
-  registerWindowClass(name, self);
-
-  return ::CreateWindowExW(0, name, name, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT,
-                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, getInstance(),
-                           self);
+  return ::CreateWindowExW(0, className.c_str(), className.c_str(),
+                           WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT,
+                           CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInstance, self);
 }
 
 template <typename T>

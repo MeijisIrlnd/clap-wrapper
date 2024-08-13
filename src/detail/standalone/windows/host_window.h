@@ -31,8 +31,9 @@ struct HostWindow
   const clap_plugin_gui_t* m_pluginGui;
   const clap_plugin_state_t* m_pluginState;
   freeaudio::clap_wrapper::standalone::StandaloneHost* m_standaloneHost;
-  wil::unique_hwnd m_hWnd;
-  SettingsWindow m_settingsWindow;
   std::vector<COMDLG_FILTERSPEC> m_fileTypes{{L"clapwrapper", L"*.clapwrapper"}};
+
+  SettingsWindow m_settingsWindow;
+  wil::unique_hwnd m_hWnd;
 };
 }  // namespace freeaudio::clap_wrapper::standalone::windows
