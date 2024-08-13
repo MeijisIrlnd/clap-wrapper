@@ -171,11 +171,11 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
 
   if (m_pluginGui->can_resize(m_plugin))
   {
-    ::RECT rect{};
-    ::GetClientRect(hWnd, &rect);
+    ::RECT clientRect{};
+    ::GetClientRect(hWnd, &clientRect);
 
-    uint32_t width = static_cast<uint32_t>(rect.right - rect.left);
-    uint32_t height = static_cast<uint32_t>(rect.bottom - rect.top);
+    auto width{static_cast<uint32_t>(clientRect.right - clientRect.left)};
+    auto height{static_cast<uint32_t>(clientRect.bottom - clientRect.top)};
 
     clap_gui_resize_hints resizeHints;
     if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
