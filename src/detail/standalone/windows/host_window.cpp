@@ -113,9 +113,9 @@ void HostWindow::setupPlugin()
 
 bool HostWindow::setWindowSize(uint32_t width, uint32_t height)
 {
-  ::RECT rect{0, 0, 0, 0};
-  rect.right = width;
-  rect.bottom = height;
+  ::RECT rect{};
+  rect.right = static_cast<LONG>(width);
+  rect.bottom = static_cast<LONG>(height);
 
   ::AdjustWindowRectExForDpi(
       &rect, ::GetWindowLongPtrW(m_hWnd.get(), GWL_STYLE), ::GetMenu(m_hWnd.get()) != nullptr,
@@ -176,11 +176,11 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
 {
   if (m_pluginGui->can_resize(m_plugin))
   {
-    ::RECT rect{0, 0, 0, 0};
+    ::RECT rect{};
     ::GetClientRect(hWnd, &rect);
 
-    uint32_t width = (rect.right - rect.left);
-    uint32_t height = (rect.bottom - rect.top);
+    uint32_t width = static_cast<uint32_t>(rect.right - rect.left);
+    uint32_t height = static_cast<uint32_t>(rect.bottom - rect.top);
 
     m_pluginGui->adjust_size(m_plugin, &width, &height);
     m_pluginGui->set_size(m_plugin, width, height);
