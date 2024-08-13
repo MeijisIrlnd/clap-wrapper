@@ -18,13 +18,13 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
 {
   if (!m_plugin)
   {
-    helpers::errorBox({"Plugin is null"});
+    helpers::errorBox("Plugin is null");
     helpers::abort();
   }
 
   if (!m_pluginGui)
   {
-    helpers::errorBox({"Plugin GUI is null"});
+    helpers::errorBox("Plugin GUI is null");
     helpers::abort();
   }
 
@@ -33,7 +33,7 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
 
   if (!m_hWnd)
   {
-    helpers::errorBox({"Host Window creation failed"});
+    helpers::errorBox("Host Window creation failed");
     helpers::abort();
   }
 
@@ -43,15 +43,13 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
 
   if (!checkApi())
   {
-    helpers::errorBox({"CLAP_WINDOW_API_WIN32 is not supported"});
+    helpers::errorBox("CLAP_WINDOW_API_WIN32 is not supported");
     helpers::abort();
   }
 
   setupPlugin();
 
   helpers::activateWindow(m_hWnd.get());
-
-  freeaudio::clap_wrapper::standalone::mainStartAudio();
 }
 
 void HostWindow::setupMenu()
@@ -253,7 +251,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
         auto saveFile{std::filesystem::path(result.get())};
 
-        LOG << saveFile << std::endl;
+        helpers::log("{}", saveFile);
 
         try
         {
@@ -290,7 +288,7 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
         auto saveFile{std::filesystem::path(result.get())};
 
-        LOG << saveFile << std::endl;
+        helpers::log("{}", saveFile);
 
         try
         {

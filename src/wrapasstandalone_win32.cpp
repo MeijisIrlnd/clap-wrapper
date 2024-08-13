@@ -29,12 +29,13 @@ int main(int argc, char** argv)
 
   if (!entry)
   {
-    freeaudio::clap_wrapper::standalone::windows::helpers::errorBox({"No entry as configured"});
+    freeaudio::clap_wrapper::standalone::windows::helpers::errorBox("No entry as configured");
     freeaudio::clap_wrapper::standalone::windows::helpers::abort(3);
   }
 
   auto clapPlugin{
       freeaudio::clap_wrapper::standalone::mainCreatePlugin(entry, PLUGIN_ID, PLUGIN_INDEX, argc, argv)};
+  freeaudio::clap_wrapper::standalone::mainStartAudio();
 
   freeaudio::clap_wrapper::standalone::windows::HostWindow hostWindow{clapPlugin};
 
