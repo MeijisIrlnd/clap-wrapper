@@ -71,7 +71,12 @@ void HostWindow::setupMenu()
 void HostWindow::setupStandaloneHost()
 {
   freeaudio::clap_wrapper::standalone::getStandaloneHost()->onRequestResize =
-      [this](uint32_t width, uint32_t height) { return setWindowSize(width, height); };
+      [this](uint32_t width, uint32_t height)
+  {
+    helpers::log("onRequestResize: width: {} height: {}", width, height);
+
+    return setWindowSize(width, height);
+  };
 }
 
 void HostWindow::setupPlugin()
@@ -101,9 +106,7 @@ void HostWindow::setupPlugin()
 
   setWindowSize(width, height);
 
-  clap_window clapWindow;
-  clapWindow.api = CLAP_WINDOW_API_WIN32;
-  clapWindow.win32 = static_cast<void*>(m_hWnd.get());
+  clap_window clapWindow{.api{CLAP_WINDOW_API_WIN32}, .win32{static_cast<void*>(m_hWnd.get())}};
 
   m_pluginGui->set_parent(m_plugin, &clapWindow);
 }
