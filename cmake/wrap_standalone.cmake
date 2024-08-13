@@ -137,16 +137,19 @@ function(target_add_standalone_wrapper)
                         )
         endif()
 
-        target_link_options(
+        if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+            target_link_options(
                 ${SA_TARGET}
                 PRIVATE
-                $<$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>:
                 /entry:mainCRTStartup
-                >
-                $<$<CXX_COMPILER_FRONTEND_VARIANT:GNU>:
-                -Wl,/entry:mainCRTStartup
-                >
                 )
+        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            target_link_options(
+                ${SA_TARGET}
+                PRIVATE
+                -Wl,/entry:mainCRTStartup
+                )
+        endif()
 
     elseif(UNIX)
         target_sources(${SA_TARGET} PRIVATE
