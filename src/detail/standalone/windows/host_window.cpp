@@ -182,6 +182,16 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
     uint32_t width = static_cast<uint32_t>(rect.right - rect.left);
     uint32_t height = static_cast<uint32_t>(rect.bottom - rect.top);
 
+    clap_gui_resize_hints resizeHints;
+    if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
+    {
+      helpers::log("preserve_aspect_ratio: {}", resizeHints.preserve_aspect_ratio);
+      helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
+                   resizeHints.aspect_ratio_height);
+      helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
+                   resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
+    }
+
     m_pluginGui->adjust_size(m_plugin, &width, &height);
     m_pluginGui->set_size(m_plugin, width, height);
   }
