@@ -160,20 +160,23 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
   if (m_pluginGui->can_resize(m_plugin))
   {
     clap_gui_resize_hints resizeHints;
-    if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
+    auto hints{m_pluginGui->get_resize_hints(m_plugin, &resizeHints)};
+    if (hints)
     {
       helpers::log("preserve_aspect_ratio: {}", resizeHints.preserve_aspect_ratio);
-      helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
-                   resizeHints.aspect_ratio_height);
-      helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
-                   resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
-      windowPos->cx = 100;
-      if (resizeHints.preserve_aspect_ratio)
-      {
-        // windowPos->cx /= 2;
-        // windowPos->cy /= 2;
-      }
+      // helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
+      //              resizeHints.aspect_ratio_height);
+      // helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
+      //              resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
+      // windowPos->cx = 100;
+      // if (resizeHints.preserve_aspect_ratio)
+      // {
+      // windowPos->cx /= 2;
+      // windowPos->cy /= 2;
+      // }
     }
+    helpers::log("get_resize_hints: {} preserve_aspect_ratio: {}", hints,
+                 resizeHints.preserve_aspect_ratio);
 
     // windowPos->cx /= 2;
 
