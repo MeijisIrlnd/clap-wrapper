@@ -117,10 +117,14 @@ struct StandaloneHost : Clap::IHost
   {
     TRACE;
   }
+  // Set to true in request_callback, impls should set this back to false once they've handled the event. (I've only done it on windows)
+  std::atomic<bool> callbackRequested{false};
   void request_callback() override
   {
-    TRACE;
+    callbackRequested = true;
+    //    TRACE;
   }
+
   void setupWrapperSpecifics(const clap_plugin_t *plugin) override
   {
     TRACE;

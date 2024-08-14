@@ -26,6 +26,7 @@ struct HostWindow
   int onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
   int onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
   int onDestroy(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
+  int onTimerEvent(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
 
   std::shared_ptr<Clap::Plugin> m_clapPlugin;
   const clap_plugin_t* m_plugin;

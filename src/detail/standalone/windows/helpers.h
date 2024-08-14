@@ -30,6 +30,9 @@ bool checkWindowVisibility(::HWND window);
 unsigned int getCurrentDpi(::HWND window);
 double getCurrentScale(::HWND window);
 
+void startTimer(::HWND window, ::UINT_PTR timerId, ::UINT intervalMs);
+void stopTimer(::HWND window, ::UINT_PTR timerId);
+
 void abort(unsigned int exitCode = EXIT_FAILURE);
 void quit(unsigned int exitCode = EXIT_SUCCESS);
 int messageLoop();

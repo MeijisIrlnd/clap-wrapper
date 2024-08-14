@@ -2,6 +2,7 @@
 #include "detail/standalone/entry.h"
 #include "host_window.h"
 #include "helpers.h"
+#include <cassert>;
 
 #define IDM_SETTINGS 1001
 #define IDM_SAVE_STATE 1002
@@ -10,6 +11,7 @@
 
 namespace freeaudio::clap_wrapper::standalone::windows
 {
+static constexpr auto TIMER_ID = 0x0;
 HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   : m_clapPlugin{clapPlugin}
   , m_plugin{m_clapPlugin->_plugin}
@@ -50,6 +52,10 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   setupPlugin();
 
   helpers::activateWindow(m_hWnd.get());
+
+  // TIMER_ID defined as constexpr in this TU
+  // Runs every 1MS - any ideas for a better interval appreciated.
+  helpers::startTimer(m_hWnd.get(), TIMER_ID, 1);
 
   freeaudio::clap_wrapper::standalone::mainStartAudio();
 }
@@ -174,6 +180,8 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
         return self->onSysCommand(hWnd, uMsg, wParam, lParam);
       case WM_DESTROY:
         return self->onDestroy(hWnd, uMsg, wParam, lParam);
+      case WM_TIMER:
+        return self->onTimerEvent(hWnd, uMsg, wParam, lParam);
     }
   }
 
@@ -341,11 +349,26 @@ int HostWindow::onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 int HostWindow::onDestroy(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   m_pluginGui->destroy(m_plugin);
-
+  // The timer gets killed here - if we crash, obviously this isn't graceful
+  helpers::stopTimer(hWnd, TIMER_ID);
   freeaudio::clap_wrapper::standalone::mainFinish();
 
   helpers::quit();
 
+  return 0;
+}
+
+int HostWindow::onTimerEvent(::HWND /*hWnd*/, ::UINT /*uMsg*/, ::WPARAM wParam, ::LPARAM /*lParam*/)
+{
+  if (wParam != TIMER_ID) assert(false);  // Or yknow, an actual exit code..
+  auto* standaloneHost = freeaudio::clap_wrapper::standalone::getStandaloneHost();
+  const auto hasCallbacks = standaloneHost->callbackRequested.load();
+  if (hasCallbacks)
+  {
+    // Reset the atomic for the next request_callback..
+    standaloneHost->callbackRequested.store(false);
+    m_plugin->on_main_thread(m_plugin);
+  }
   return 0;
 }
 }  // namespace freeaudio::clap_wrapper::standalone::windows
