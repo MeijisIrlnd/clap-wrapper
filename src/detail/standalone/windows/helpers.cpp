@@ -2,6 +2,15 @@
 
 namespace freeaudio::clap_wrapper::standalone::windows::helpers
 {
+Size getClientSize(::HWND window)
+{
+  ::RECT clientRect{};
+  ::GetClientRect(window, &clientRect);
+
+  return Size{.width{static_cast<uint32_t>(clientRect.right - clientRect.left)},
+              .height{static_cast<uint32_t>(clientRect.bottom - clientRect.top)}};
+}
+
 ::HMODULE getInstance()
 {
   ::HMODULE hInstance;

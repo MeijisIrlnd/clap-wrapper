@@ -71,12 +71,7 @@ void HostWindow::setupMenu()
 void HostWindow::setupStandaloneHost()
 {
   freeaudio::clap_wrapper::standalone::getStandaloneHost()->onRequestResize =
-      [this](uint32_t width, uint32_t height)
-  {
-    helpers::log("onRequestResize: width: {} height: {}", width, height);
-
-    return setWindowSize(width, height);
-  };
+      [this](uint32_t width, uint32_t height) { return setWindowSize(width, height); };
 }
 
 void HostWindow::setupPlugin()
@@ -135,8 +130,8 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
     {
       case WM_DPICHANGED:
         return self->onDpiChanged(hWnd, uMsg, wParam, lParam);
-      case WM_WINDOWPOSCHANGING:
-        return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
+      // case WM_WINDOWPOSCHANGING:
+      //   return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGED:
         return self->onWindowPosChanged(hWnd, uMsg, wParam, lParam);
       case WM_SYSCOMMAND:
@@ -191,8 +186,6 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
-  auto width{static_cast<uint32_t>(windowPos->cx)};
-  auto height{static_cast<uint32_t>(windowPos->cy)};
 
   if (windowPos->flags & SWP_SHOWWINDOW)
   {
@@ -206,10 +199,10 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
 
   if (m_pluginGui->can_resize(m_plugin))
   {
-    m_pluginGui->adjust_size(m_plugin, &width, &height);
-    m_pluginGui->set_size(m_plugin, width, height);
+    auto size{helpers::getClientSize(m_hWnd.get())};
 
-    helpers::log("WM_WINDOWPOSCHANGED - width: {} height: {}", width, height);
+    m_pluginGui->adjust_size(m_plugin, &size.width, &size.height);
+    m_pluginGui->set_size(m_plugin, size.width, size.height);
   }
 
   return 0;

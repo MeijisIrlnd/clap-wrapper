@@ -16,6 +16,14 @@
 
 namespace freeaudio::clap_wrapper::standalone::windows::helpers
 {
+struct Size
+{
+  uint32_t width;
+  uint32_t height;
+};
+
+Size getClientSize(::HWND window);
+
 ::HMODULE getInstance();
 
 bool activateWindow(::HWND window);
