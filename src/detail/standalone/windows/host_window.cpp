@@ -161,14 +161,11 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
+  auto width{static_cast<uint32_t>(windowPos->cx)};
+  auto height{static_cast<uint32_t>(windowPos->cy)};
 
   if (m_pluginGui->can_resize(m_plugin))
   {
-    auto width{static_cast<uint32_t>(windowPos->cx)};
-    auto height{static_cast<uint32_t>(windowPos->cy)};
-    // windowPos->cx /= 2;
-    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", width, height);
-
     clap_gui_resize_hints resizeHints;
     if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
     {
@@ -178,6 +175,9 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
       helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
                    resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
     }
+    // windowPos->cx /= 2;
+
+    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", width, height);
   }
 
   return 0;
@@ -186,11 +186,14 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
+  auto width{static_cast<uint32_t>(windowPos->cx)};
+  auto height{static_cast<uint32_t>(windowPos->cy)};
 
   if (windowPos->flags & SWP_SHOWWINDOW)
   {
     m_pluginGui->show(m_plugin);
   }
+
   if (windowPos->flags & SWP_HIDEWINDOW)
   {
     m_pluginGui->hide(m_plugin);
@@ -198,12 +201,10 @@ int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::
 
   if (m_pluginGui->can_resize(m_plugin))
   {
-    auto width{static_cast<uint32_t>(windowPos->cx)};
-    auto height{static_cast<uint32_t>(windowPos->cy)};
-    helpers::log("WM_WINDOWPOSCHANGED - width: {} height: {}", width, height);
-
     m_pluginGui->adjust_size(m_plugin, &width, &height);
     m_pluginGui->set_size(m_plugin, width, height);
+
+    helpers::log("WM_WINDOWPOSCHANGED - width: {} height: {}", width, height);
   }
 
   return 0;
