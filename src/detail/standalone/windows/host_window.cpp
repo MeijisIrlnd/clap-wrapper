@@ -99,6 +99,11 @@ void HostWindow::setupPlugin()
 
   m_pluginGui->get_size(m_plugin, &width, &height);
 
+  if (height != 0)
+  {
+    m_aspectRatio = static_cast<float>(width) / height;
+  }
+
   setWindowSize(width, height);
 
   clap_window clapWindow{.api{CLAP_WINDOW_API_WIN32}, .win32{static_cast<void*>(m_hWnd.get())}};
@@ -161,12 +166,16 @@ int HostWindow::onGetMinMaxInfo(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPA
 {
   helpers::log("WM_GETMINAXMINFO");
 
+  auto minMaxInfo{reinterpret_cast<::LPMINMAXINFO>(lParam)};
+
+  // minMaxInfo->
+
   return 0;
 }
 
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
-  // helpers::log("WM_WINDOWPOSCHANGING");
+  helpers::log("WM_WINDOWPOSCHANGING");
 
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
 
@@ -180,12 +189,15 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
     }
   }
 
+  // windowPos->cy =
+  windowPos->cx = windowPos->cy * m_aspectRatio;
+
   return 0;
 }
 
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
-  // helpers::log("WM_WINDOWPOSCHANGED");
+  helpers::log("WM_WINDOWPOSCHANGED");
 
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
 

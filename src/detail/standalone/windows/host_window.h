@@ -27,6 +27,8 @@ struct HostWindow
   int onSysCommand(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
   int onDestroy(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam);
 
+  float m_aspectRatio;
+
   std::shared_ptr<Clap::Plugin> m_clapPlugin;
   const clap_plugin_t* m_plugin;
   const clap_plugin_gui_t* m_pluginGui;
