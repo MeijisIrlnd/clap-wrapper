@@ -161,8 +161,8 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
-  auto width{static_cast<uint32_t>(windowPos->cx)};
-  auto height{static_cast<uint32_t>(windowPos->cy)};
+  // auto width{static_cast<uint32_t>(windowPos->cx)};
+  // auto height{static_cast<uint32_t>(windowPos->cy)};
 
   if (m_pluginGui->can_resize(m_plugin))
   {
@@ -174,10 +174,17 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
                    resizeHints.aspect_ratio_height);
       helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
                    resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
+      windowPos->cx = 100;
+      if (resizeHints.preserve_aspect_ratio)
+      {
+        // windowPos->cx /= 2;
+        // windowPos->cy /= 2;
+      }
     }
+
     // windowPos->cx /= 2;
 
-    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", width, height);
+    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", windowPos->cx, windowPos->cy);
   }
 
   return 0;
