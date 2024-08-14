@@ -153,6 +153,10 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
+  // https://billthefarmer.github.io/blog/post/handling-resizing-in-windows/
+  // https://playtechs.blogspot.com/2007/10/forcing-window-to-maintain-particular.html
+  // https://www.vbforums.com/showthread.php?889548-How-to-programmatically-force-a-WM_SIZING-message
+
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
   // auto width{static_cast<uint32_t>(windowPos->cx)};
   // auto height{static_cast<uint32_t>(windowPos->cy)};
