@@ -130,6 +130,8 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
     {
       case WM_DPICHANGED:
         return self->onDpiChanged(hWnd, uMsg, wParam, lParam);
+      case WM_GETMINMAXINFO:
+        return self->onGetMinMaxInfo(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGING:
         return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGED:
@@ -155,8 +157,17 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
 // https://playtechs.blogspot.com/2007/10/forcing-window-to-maintain-particular.html
 // https://www.vbforums.com/showthread.php?889548-How-to-programmatically-force-a-WM_SIZING-message
 
+int HostWindow::onGetMinMaxInfo(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
+{
+  helpers::log("WM_GETMINAXMINFO");
+
+  return 0;
+}
+
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
+  // helpers::log("WM_WINDOWPOSCHANGING");
+
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
 
   if (m_pluginGui->can_resize(m_plugin))
@@ -174,6 +185,8 @@ int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, :
 
 int HostWindow::onWindowPosChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
+  // helpers::log("WM_WINDOWPOSCHANGED");
+
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
 
   if (windowPos->flags & SWP_SHOWWINDOW)

@@ -147,13 +147,13 @@ std::string toUTF8(std::wstring_view utf16)
   return utf8;
 }
 
-void dbg(const std::string& message)
+void log(const std::string& message)
 {
   ::OutputDebugStringW(toUTF16(message).c_str());
   ::OutputDebugStringW(L"\n");
 }
 
-void dbg(const std::wstring& message)
+void log(const std::wstring& message)
 {
   ::OutputDebugStringW(message.c_str());
   ::OutputDebugStringW(L"\n");
