@@ -101,7 +101,7 @@ function(target_add_standalone_wrapper)
         macos_include_clap_in_bundle(TARGET ${SA_TARGET}
                 MACOS_EMBEDDED_CLAP_LOCATION ${SA_MACOS_EMBEDDED_CLAP_LOCATION})
 
-    elseif(WIN32 AND (CMAKE_CXX_COMPILER_ID MATCHES "MSVC" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    elseif(WIN32 AND (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
         if(NOT "${SA_WIN32_ICON}" STREQUAL "")
             message(STATUS "Win32 icon found: ${SA_WIN32_ICON}")
             file(WRITE "${CMAKE_BINARY_DIR}/standalone_win32.rc" "1 ICON \"standalone_win32.ico\"")
@@ -137,13 +137,13 @@ function(target_add_standalone_wrapper)
                         )
         endif()
 
-        if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
             target_link_options(
                 ${SA_TARGET}
                 PRIVATE
                 /entry:mainCRTStartup
                 )
-        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             target_link_options(
                 ${SA_TARGET}
                 PRIVATE
