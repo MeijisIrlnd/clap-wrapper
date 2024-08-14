@@ -78,7 +78,7 @@ void HostWindow::setupPlugin()
 {
   m_pluginGui->create(m_plugin, CLAP_WINDOW_API_WIN32, false);
 
-  m_pluginGui->set_scale(m_plugin, helpers::getCurrentScale(m_hWnd.get()));
+  m_pluginGui->set_scale(m_plugin, helpers::getScale(m_hWnd.get()));
 
   uint32_t width{0};
   uint32_t height{0};
@@ -130,8 +130,8 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
     {
       case WM_DPICHANGED:
         return self->onDpiChanged(hWnd, uMsg, wParam, lParam);
-      // case WM_WINDOWPOSCHANGING:
-      //   return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
+      case WM_WINDOWPOSCHANGING:
+        return self->onWindowPosChanging(hWnd, uMsg, wParam, lParam);
       case WM_WINDOWPOSCHANGED:
         return self->onWindowPosChanged(hWnd, uMsg, wParam, lParam);
       case WM_SYSCOMMAND:
@@ -146,7 +146,7 @@ LRESULT CALLBACK HostWindow::wndProc(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, 
 
 int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
-  m_pluginGui->set_scale(m_plugin, helpers::getCurrentScale(hWnd));
+  m_pluginGui->set_scale(m_plugin, helpers::getScale(hWnd));
 
   return 0;
 }

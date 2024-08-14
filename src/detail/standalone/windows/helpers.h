@@ -33,7 +33,7 @@ void centerWindow(::HWND window, int width, int height);
 bool closeWindow(::HWND window);
 bool checkWindowVisibility(::HWND window);
 unsigned int getCurrentDpi(::HWND window);
-double getCurrentScale(::HWND window);
+double getScale(::HWND window);
 
 void abort(unsigned int exitCode = EXIT_FAILURE);
 void quit(unsigned int exitCode = EXIT_SUCCESS);

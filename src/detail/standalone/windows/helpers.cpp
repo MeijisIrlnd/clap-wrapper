@@ -65,7 +65,7 @@ unsigned int getCurrentDpi(::HWND window)
   return ::GetDpiForWindow(window);
 }
 
-double getCurrentScale(::HWND window)
+double getScale(::HWND window)
 {
   return static_cast<double>(::GetDpiForWindow(window)) / static_cast<double>(USER_DEFAULT_SCREEN_DPI);
 }
