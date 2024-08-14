@@ -151,40 +151,22 @@ int HostWindow::onDpiChanged(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM
   return 0;
 }
 
+// https://billthefarmer.github.io/blog/post/handling-resizing-in-windows/
+// https://playtechs.blogspot.com/2007/10/forcing-window-to-maintain-particular.html
+// https://www.vbforums.com/showthread.php?889548-How-to-programmatically-force-a-WM_SIZING-message
+
 int HostWindow::onWindowPosChanging(::HWND hWnd, ::UINT uMsg, ::WPARAM wParam, ::LPARAM lParam)
 {
-  // https://billthefarmer.github.io/blog/post/handling-resizing-in-windows/
-  // https://playtechs.blogspot.com/2007/10/forcing-window-to-maintain-particular.html
-  // https://www.vbforums.com/showthread.php?889548-How-to-programmatically-force-a-WM_SIZING-message
-
   auto windowPos{reinterpret_cast<::LPWINDOWPOS>(lParam)};
-  // auto width{static_cast<uint32_t>(windowPos->cx)};
-  // auto height{static_cast<uint32_t>(windowPos->cy)};
 
   if (m_pluginGui->can_resize(m_plugin))
   {
     clap_gui_resize_hints resizeHints;
-    auto hints{m_pluginGui->get_resize_hints(m_plugin, &resizeHints)};
-    if (hints)
+
+    if (m_pluginGui->get_resize_hints(m_plugin, &resizeHints))
     {
       helpers::log("preserve_aspect_ratio: {}", resizeHints.preserve_aspect_ratio);
-      // helpers::log("aspect_ratio_width: {} aspect_ratio_height: {}", resizeHints.aspect_ratio_width,
-      //              resizeHints.aspect_ratio_height);
-      // helpers::log("can_resize_horizontally: {} can_resize_vertically: {}",
-      //              resizeHints.can_resize_horizontally, resizeHints.can_resize_vertically);
-      // windowPos->cx = 100;
-      // if (resizeHints.preserve_aspect_ratio)
-      // {
-      // windowPos->cx /= 2;
-      // windowPos->cy /= 2;
-      // }
     }
-    helpers::log("get_resize_hints: {} preserve_aspect_ratio: {}", hints,
-                 resizeHints.preserve_aspect_ratio);
-
-    // windowPos->cx /= 2;
-
-    helpers::log("WM_WINDOWPOSCHANGING - width: {} height: {}", windowPos->cx, windowPos->cy);
   }
 
   return 0;
