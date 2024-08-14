@@ -113,9 +113,7 @@ void HostWindow::setupPlugin()
 
 bool HostWindow::setWindowSize(uint32_t width, uint32_t height)
 {
-  ::RECT rect{};
-  rect.right = static_cast<LONG>(width);
-  rect.bottom = static_cast<LONG>(height);
+  ::RECT rect{.left{0}, .top{0}, .right{static_cast<LONG>(width)}, .bottom{static_cast<LONG>(height)}};
 
   ::AdjustWindowRectExForDpi(
       &rect, ::GetWindowLongPtrW(m_hWnd.get(), GWL_STYLE), ::GetMenu(m_hWnd.get()) != nullptr,
