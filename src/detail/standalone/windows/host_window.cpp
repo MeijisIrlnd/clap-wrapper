@@ -12,6 +12,7 @@
 namespace freeaudio::clap_wrapper::standalone::windows
 {
 static constexpr auto TIMER_ID = 0x0;
+static constexpr auto TIMER_INTERVAL_MS = 8;  // ~120hz as per baconpaul
 HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
   : m_clapPlugin{clapPlugin}
   , m_plugin{m_clapPlugin->_plugin}
@@ -55,7 +56,7 @@ HostWindow::HostWindow(std::shared_ptr<Clap::Plugin> clapPlugin)
 
   // TIMER_ID defined as constexpr in this TU
   // Runs every 1MS - any ideas for a better interval appreciated.
-  helpers::startTimer(m_hWnd.get(), TIMER_ID, 1);
+  helpers::startTimer(m_hWnd.get(), TIMER_ID, TIMER_INTERVAL_MS);
 
   freeaudio::clap_wrapper::standalone::mainStartAudio();
 }
